@@ -1,0 +1,320 @@
+P. Rychly, P. Smrz
+MANATEE,  BONITO  AND  WORD  SKETCHES   
+FOR  CZECH
+    0. Abstract
+    This paper deals with a newly designed and developed system 
+Manatee that can be employed to manage corpora, especially extre-
+mely large ones with billions of words, and enables the efficient 
+evaluation of complex queries and the computation of advanced 
+statistics. The main functions of the tool are presented here, together 
+with the introduction of its web-based graphical user interface, Bonito. 
+The sophisticated statistical processing is demonstrated in an example 
+of computing of Word Sketches. Special attention is paid to the 
+definition of the word sketches for Czech and problems connected to 
+its free word order. 
+    1. Introduction
+    Corpora, as a kind of empirical data, play a crucial role in current 
+linguistics. While the size of the corpora has increased from several 
+million to hundreds of millions (cf. Brown Corpus and American 
+GigaCorpus), the management of such a vast amount of data is 
+undeniably complicated. Our corpus management system Manatee is 
+able to deal with extremely large corpora and is able to provide a 
+platform for computing a wide range of lexical statistics.
+    An ideal general-purpose corpus management tool should embra-
+ce the complete life cycle of a corpus. For text data, it should enable:
+    *	text preparation - conversion from various formats, enco-
+dings, etc.;
+    *	metadata management - integration of the information about 
+the source of data, authors, topics, genre,..
+    *	tokenization - language-dependent determination of the 
+elementary unit accessed, usually a word;
+    *	corpus annotation - potentially ambiguous, manual and auto-
+matic tagging on morphological, syntactic, semantic and pragmatic 
+levels;
+    *	efficient corpus storage - the storage requirements of the 
+indexes needed for querying should be minimized as well as the time 
+required for their creation;
+    *	concordancing - retrieving language data matching the user's 
+query;
+    *	computation of statistics - searching for typical patterns in 
+data, frequency distribution of various features, co-occurrence statis-
+tics, etc.
+    Moreover, the ideal corpus management tool should implement 
+all these tasks independent of:
+    *	the language - especially text preparation, tokenization and 
+corpus annotation;
+    *	the platform (efficient storage and retrieval of corpus data as 
+well as demanding computation present a challenging task for a plat-
+form independent implementation).
+    Currently, no single piece of software meets all of these require-
+ments. However, the corpus manager Manatee implements seven of 
+these criteria and provides an appropriate platform for integrating the 
+language- and annotation-dependent tasks carried out by external tools.
+    2. Manatee and Bonito
+    The corpus management system Manatee is based on the text 
+indexing library FINLIB [Rychly P. Corpus Managers and Their Effective 
+Implementation. PhD Thesis, Faculty of Informatics, Masaryk University, 2000.] that 
+provides storage and retrieval mechanisms for corpus data based on an 
+efficient implementation of inverted indexes, suffix arrays, etc. The 
+system processes either the output of an external tokenizer or that of the 
+simple internal one, that does not allow for any language-dependent 
+rules, e.g. for English don't or Russian из-за. There are two kinds of 
+attributes that can be provided - positional that can be defined for each 
+token or structure - and structural that denotes a structure in the text 
+(e.g. a sentence, paragraph, document, etc.).
+    The input format of Manatee is the so-called vertical text (or 
+vertical) as specified by the Stuttgart Corpus Tools (http://www.ims. 
+uni-stuttgart.de/projekte/CorpusWorkbench/). Each word is on a 
+new line, and for each word, there can be a number of fields specify-
+ing further information such as POS-tags, lemmas etc. The fields are 
+separated by tabs. Corpora in other formats, such as the XCES stan-
+dard, can be easily transformed to vertical.
+    The main aim of Manatee is large corpus management: in the 
+most recent version, "large" exceeded 109 words and was only limited 
+by disk size. This is in various languages and encodings, with no 
+limits on the annotation, the number of attributes or metainformation. 
+The architecture is modular and flexible. For example, it can be 
+extended to implement better compression of special data and more 
+statistics. It also queries and computes statistics very rapidly. The 
+storage mechanism of Manatee is very efficient with all the necessary 
+indexes and the compressed text requiring approximately 20% more 
+space than the original text.
+    Manatee implements a powerful query language. It enables sear-
+ches given by restrictions on any attribute, on any metainformation, or 
+on any of their combinations. A given query can be further refined by 
+means of positive or negative filters that are applied on the current 
+result. A result of any query can be stored as a new subcorpus and all 
+further processing (e.g. statistics) can be done on that.
+    The tool also allows the computation of advanced statistical 
+characteristics of given corpus data. The multilevel frequency 
+distribution for KWIC can be grouped by attributes or metainfor-
+mation tags. Various statistical functions are computed for colloca-
+tions (see Figure 1 for an example of collocation statistics).
+
+    Other advanced features of Manatee that cannot be found in other 
+corpus managers are multi-values, dynamic attributes and the defini-
+tion of subcorpora. Corpus annotation is often ambiguous and the 
+ambiguity cannot be easily/immediately removed. Manatee can pro-
+cess ambiguous annotation by means of multi-value attributes. For 
+example, the POS tag for the Russian word стать will contain both 
+noun and verb tags, and it will be displayed if one searches either for 
+nouns or for verbs. Sometimes, it is easier to provide a program that 
+generates an annotation on the fly than to include the full tagging in 
+the corpus source (the annotation can be added, modified, extended,..). 
+Manatee defines these computed tags as dynamic attributes and is able 
+to query and compute statistics as if they were static.
+    Manatee also functions as a corpus management server. Various 
+interfaces have been defined to access its functions. There are com-
+mand-line utilities to integrate the functionality in standard Unix-like 
+pipelines, application program interface (API) for accessing of 
+external tools, and graphical user interfaces (GUIs) - Bonito version 1 
+and 2. GUIs provide easy interfaces even for advanced functions such 
+as dynamically generated forms for queries on any attribute, concor-
+dances. Bonito 1 is a standard multiplatform application that, once in-
+stalled, can connect to the Manatee server and mediate most of its 
+functions in a user-friendly way.
+    Bonito 2 is a new GUI that is completely web-based. Web pages 
+are generated on the server (using CGI), with the standard web 
+browser serving as the corpus client. It is easier for users - they do not 
+need to familiarize themselves with a new application, and all the 
+standard procedures - such as cut & paste, bookmarks, etc. - will 
+work. There are also no security-policy problems with access through 
+firewalls. Moreover, the web interface can be easily and promptly 
+configured and extended as needed for various projects and/or user 
+groups.
+    The known solutions of access and load control can be applied to 
+the web server and the standard secured web protocol (https) can be 
+used too. The localization of the tool can be simplified by page 
+templates. Finally, it is easy to connect Bonito 2 to other sources and/or 
+applications - the web pages can be read from other applications, and 
+links to external sources (a picture, a sound sample, a video) can be 
+presented.
+    3. Word Sketches for Czech
+    Manatee serves as a base for the Sketch Engine [Kilgarriff A., 
+Rychly P., Smrz P., Tugwell D. The Sketch Engine // Proceedings of EURALEX 2004. 
+Lorient, 2004.]. As it was defined in Lexical Profiling Software and its 
+lexicographic applications [Kilgarriff A., Rundell M. Lexical Profiling Software 
+and its Lexicographic Applications: a Case Study // Proceedings of EURALEX 2002. 
+Copenhagen, 2002. P. 807-818.], Word Sketch is a short corpus-based 
+summary of a word's grammatical and collocational behaviour (see 
+Figure 2 for an example). The Sketch Engine takes as input a corpus of 
+any language and corresponding grammatical patterns, and generates 
+word sketches for the words of that language. It also generates a 
+thesaurus and "sketch differences", which specify similarities and 
+differences between semantically related words, e.g. near-synonyms 
+like clever and intelligent.
+
+    It is relatively easy to define grammatical patterns for languages 
+with a regular word order, such as English. On the other hand, langua-
+ges with a relatively free word order can pose obstacles for non-
+conflicting sketch patterns. For example, the sentence structure of 
+Slavic languages is designated as free, but the term serves only as a 
+label for word order that cannot be easily described by a set of rules 
+based only on syntactic criteria. The word order plays an important role 
+in communicative dynamism in expressing the sentence focus. This 
+phenomenon has been intensively examined by Prague Linguistic 
+School in the context of Functional Generative Description [Hajicova E., 
+Sgall P., Skoumalova H. An Automatic Procedure for Topic-Focus Identification // 
+Computational Linguistics 21. 1994. P. 81-94.], among others.
+    As discussed in the paper by A. Kilgarriff, P. Rychly and 
+colleagues, we have derived grammatical patterns for Czech in a 
+stepwise process looking for a tradeoff between the precision and 
+recall of the patterns. This procedure has demonstrated that most 
+errors are due to the incorrect tagging of the corpus used.
+    We will demonstrate the definition of grammatical patterns for 
+Czech through the following examples. Patterns are given in the form 
+of queries in the standard Manatee format (usually produced by a 
+macro-processor such as m4 from a more readable form). Patterns 
+contain two labeled positions (1: and 2:). The 1: and 2: mark the 
+words to be extracted as the first and second arguments of the gram-
+matical relation. Lines beginning with the equal sign (=) name the 
+relation defined. Thus, the lines:
+    <object>
+    =post_inf
+    	1:[] 2:verb_inf
+    </object>
+    define post_inf relation for any word followed by infinitive 
+(such as Russian желание умереть).
+    Lines beginning with an asterisk (*) are processing directives. 
+They modify how the following lines are hadled. *SYMMETRIC 
+evaluates queries also with the `1' and `2' labels swapped. The pattern:
+<object>
+=coord
+*SYMMETRIC
+	1:[] [word = "a" | word = "nebo"] 2:[] & 
+1.k=2.k & 1.c=2.c
+    </object>
+will extract all pairs with coordinate conjunctions a (and) or nebo (or) 
+that have the same word class (1.k = 2.k) and an agreement in 
+grammatical case (1.c = 2.c).
+    The keyword DUAL specifies that there are two relations defined 
+on one line, e.g. is_subj_of and its converse, has_subj, and a single 
+instance of the relation contributes an is_subj_of relation to the noun 
+and a has_subj relation to the verb in the following example:
+<object>
+*DUAL
+=is_subj_of/has_subj
+1:noun_nominative gap([NVZJP].*) 
+2:[verb_p3X & !aux_verb]
+1:noun_nominative gap([NVZJP].*) 
+2:[verb_passive & !aux_verb]
+2:[verb_p3X & !aux_verb] gap([NVZJP].*) 
+1:noun_nominative
+2:[verb_passive & !aux_verb] gap([NVZJP].*)
+1:noun_nominative
+    </object>
+    The problem of free word order is addressed by a simple 
+mechanism of gaps in these patterns. The object gap() matches up to 
+5 words differing in their categories from the given list.
+    *TRINARY is used for trinary relations. These are translated into 
+regular binary relations with different names. A name of a trinary 
+relation contains `%s' and respective queries contain the third label 3: 
+A value of the attribute on the position labeled 3: is then substituted 
+for `%s' in the relation name. Therefore, the following pattern: 
+<object>
+    *TRINARY
+    =post_%s
+     	1:verb 3:prep adj_string 2:noun & 3.c = 2.c 
+    </object>
+    will produce several lists of nouns for each verb named 
+according to the preceding preposition, such as post_v, 
+post_na, post_k, etc. in Czech.
+    As the current situation for Czech and Russian demonstrates, it is 
+often easier to develop a robust morphological analyzer (cf. Dialing 
+[Leontieva N.N. Automatic Analysis of Russian Morphology // URL: 
+http://www.aot.ru/] and AJKA [Sedlacek R., Smrz P. A New Czech Morphological 
+Analyser AJKA // Proceedings of "Text, Speech and Dialogue". Brno, Czech 
+Republic, 2001. P. 100-107.]) than to implement a POS tagger 
+(disambiguator) for Slavic languages. In the process, we have 
+explored the possibility of computing word sketches from a 
+morphologically tagged, but not disambiguated, Czech corpus.
+    Although we can not provide conclusive final results, our 
+preliminary findings are very promising. The same texts that form the 
+Czech corpus used in our previous experiments [Kilgarriff A., Rychly P., 
+Smrz P., Tugwell D. Op. cit.] have been morphologically tagged by AJKA 
+and a new corpus has been loaded into Manatee. The grammatical 
+patterns have been redefined to cover AJKA's tag set as well as the 
+ambiguity of the annotation.
+    <object>
+corpus
+automatically  
+disambiguated
+ambiguously tagged
+tags/word
+  1
+ 4,7
+time of processing
+  51 min.
+ 253 min.
+size of output
+  58,2 mln triples
+ 97,6 mln triples
+different triples
+  18,7 mln
+ 32,6 mln
+different lemmas
+  776 252
+ 952 278
+most salient triples
+  1,4 mln
+ 2,4 mln
+intersection in the 
+most salient patterns
+58%
+    </object>
+Table 1. Quantitative characteristics of word sketches for Czech
+    The quantitative evaluation is shown in Table 1. The sketches 
+resulting from the ambiguously tagged corpus are larger and one could 
+worry how much noise is added to the output. Fortunately, there is a 
+rather large intersection for the most significant patterns. The qualita-
+tive evaluation confirms these results. The misclassified words can be 
+easily removed from the generated lists and the statistical nature of the 
+sketches on the ambiguous input even eliminates peculiar errors that 
+are present in the automatically disambiguated corpus.
+    4. Conclusions and Future Directions
+    The Sketch Engine as a commercial product has been launched 
+only recently (Euralex 2004). Nonetheless, it is already being used in 
+the construction of the Irish dictionary Foras na Gaeilge (sponsored 
+by the Irish Government) and at Oxford University Press, where 
+"sketch difference" function is used for the new edition of Oxford 
+Thesaurus of English. Manatee is employed as the main corpus mana-
+gement tool for several large corpora, including the Czech National 
+Corpus.
+    The future directions of our work are as follows. Firstly, further 
+technical upgrades of the implemented tools will aim at better 
+portability: (1) full-featured Manatee-Bonito2 on MS Windows, sup-
+port for 64-bit architectures, run from CD/DVD without requiring 
+installation, (2) extensions of API: multi-parallel corpora, word-sense 
+disambiguation, syntactical dependency structures, etc., and (3) a 
+further simplification of the user interface: attribute names, explana-
+tion of tags, easy creation of a corpus, configuration and persona-
+lization. A new query language will be defined and implemented as 
+well as advanced options of multi-level text tokenization, which 
+involves filtering and joining tokens, queries and statistics on a given 
+tokenization level. The web-based interface of Bonito2 also opens 
+doors for the "web as a corpus" ideas [Kilgarriff A., Grefenstette G. Web as 
+Corpus: Introduction to the Special Issue // Computational Linguistics 29 (3). 2003.].
+    Secondly, we are also currently working on the application of the 
+relation patterns for automatic ontology acquisition. The interest in 
+ontologies increased with the recognition of their importance for the 
+Semantic Web. The emerging information systems need the definition 
+of a common understanding for their application domains that should 
+be given by ontologies. The precision of the semantic relations is often 
+rather low, partly because the current methods often underestimate the 
+need for linguistically processing the corpus as well as because rather 
+limited corpora are often used. As our preliminary results show, a 
+slightly modified version of the word-sketch patterns could help to 
+overcome both these obstacles.
+    5. Acknowledgement
+    This work was supported by Ministry of Education of the Czech 
+Republic Research Plan CEZ:J07/98:143300003 and by the Academy 
+of Sciences of the Czech Republic "Information Society" program, 
+the research grant 1ET100300419.
+ 
+ 
+ 
+ 
+
+   
+333
+   

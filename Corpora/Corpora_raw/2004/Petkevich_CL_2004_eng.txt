@@ -1,0 +1,445 @@
+    V. Petkevic
+RULE-BASED  PART-OF-SPEECH   
+AND MORPHOLOGICAL  DISAMBIGUATION  
+OF  THE  CZECH  NATIONAL  CORPUS
+    0. Introduction
+    Automatic part-of-speech (POS) and morphological disambigua-
+tion of natural languages is one of the most difficult problems of con-
+temporary natural language processing. It can be considered a crucial 
+bottleneck in corpora build-up especially for non-configurational lan-
+guages with a free word order. The paper presents basic kinds of dis-
+ambiguation, including lemmatization, of Czech as probably the most 
+complex Slavic language from the disambiguation point of view. It 
+concentrates on a rule-based disambiguation system of Czech texts 
+contained in the Czech National Corpus (CNC) [Cf. Cesky narodni korpus - 
+SYN2000. Ustav Ceskeho narodniho korpusu FF UK. Praha, 2000 // 
+URL: http://ucnk.ff.cuni.cz], because the author considers this type of 
+disambiguation by far the most reliable one. This system currently 
+being developed in Prague is described with its main features 
+highlighted and opposed to the stochastic disambiguation methods 
+which are criticized from various points of view. It is indicated, 
+although not exhaustively demonstrated, that a rule-based approach to 
+disambiguation rooted in non-trivial linguistic thinking and verified 
+on Czech corpora can incomparably outperform stochastic methods 
+primarily used for the morphological disambiguation of Czech texts 
+up to now, in particular the texts contained in CNC.
+    1. POS, morphological disambiguation and its types
+    Automatic POS and morphological disambiguation of natural lan-
+guage texts consists in:
+    *	the disambiguation of lemma(s), i.e. in the assignment of 
+correct lemma(s) to a word form occurrence (token); 
+    *	the correct part-of-speech (POS) and morphological inter-
+pretation of a morphologically ambiguous word form occurrence (token) 
+in a text, i.e. in the assignment of proper POS and morphological tag(s) to 
+the token.
+    It is assumed that the text being processed is morphologically 
+analyzed, which means that a morphological analyzer assigns to each 
+word form all of its lemmas and grammatical tags. The disambiguation 
+module, being subsequently invoked, takes as its input the output 
+produced by morphological analysis and selects correct lemma(s) and 
+tag(s) for every word form.
+    The disambiguation of natural language texts (especially those 
+contained in language corpora) is important for various objectives:
+    *	for tagging of natural language corpora;
+    *	as a preprocessing phase of automatic syntactic analysis of 
+natural languages;
+    *	as a preliminary step towards word sense disambiguation and 
+semantic analysis;
+    *	as a necessary analytic module for coping with more complex 
+tasks, e.g. machine translation;
+    *	for the development of natural language grammars.
+    There are four basic methodological approaches to disambigua-
+tion: 1) manual approach; 2) stochastic approaches; 3) rule-based appro-
+aches; 4) combined stochastic and rule-based approaches.
+    For space reasons I shall discuss the first three approaches only.
+    1.1. Manual approach
+    Manual disambiguation is absolutely out of the question because 
+large collections of texts (usually tens of millions in size) can never be 
+properly tagged by hand. Therefore fully automatic methods must be 
+applied.
+    1.2. Stochastic approaches
+    Stochastic approaches to disambiguation [For Czech cf.: Hajic J. 
+Disambiguation of Rich Inflection (Computational Morphology of Czech). Univerzita 
+Karlova v Praze, nakladatelstvi Karolinum. Vol. 1. Praha, 2004.] are very popular 
+worldwide because:
+    *	they make it possible to achieve good results in a relatively 
+short time;
+    *	they are basically language-independent;
+    *	they use a small amount of the training data and machine 
+learning: stochastic programs are trained on relatively small training 
+data and then applied to much larger corpora;
+    *	they are relatively successful for English and configurational 
+languages.
+1.2.1. Stochastic approaches properties critically assessed
+    Notwithstanding the positive features stated above, stochastic 
+methods seem to be inappropriate for processing syntactically complex 
+languages with free word order. The criticisms can be summarized as 
+follows. Stochastic methods:
+    *	achieve good results at the start, but only a meager improve-
+ment can be expected later;
+    *	are not language-specific but they are fatally totally dependent 
+on very limited (sparse) training data and therefore they cannot 
+adequately reflect the system of language as a whole, i.e. the so-called 
+smoothing is necessary;
+    *	use only positive information based on the training data rather 
+than the negative information - this is extremely important (see below);
+    *	use only a narrow context based on so-called n-grams, i.e. 
+sequences of adjacent sequences of tags;
+    *	are crucially dependent on the size of the tagset: the larger the 
+tagset the more tag sequences exist as the result of morphological analysis 
+and the sparseness of the training data is painfully felt (for morpho-
+logically very complex Czech more than 2500 distinct tags are used! 
+[Hajic J. Op. cit]);
+    *	make error identification impossible or at least very difficult - 
+thus the black box character of the stochastic approach comes to the fore;
+    *	commit naive errors primarily due to smoothing ne-cessitated 
+by the insufficiency of the training data; in this respect, the disambi-
+guation seems to be based on mere guesswork. This can be remedied 
+either by rules or by more and more data only - a rather pessimistic 
+perspective;
+    *	may "overdisambiguate", i.e. they inadequately disam-biguate 
+morphologically inherently ambiguous sentences and their ambiguity is 
+thus not preserved;
+    *	are far less successful when applied to inflectional languages 
+with free word order.
+    The main corpus within the CNC project, the corpus SYN2000 
+of synchronic Czech, has been tagged by stochastic methods [Hajic J. 
+Op. cit.] with the global success rate being equal to 94,65%, with 
+unambiguous word forms being counted in. As the 5,35% inaccuracy 
+is considered to be too high for more fine-grained, especially syntactic 
+research, a different disambiguation method has been developed. This 
+method based on linguistic rules will be described in the sequel.
+1.3. Rule-based approaches to disambiguation
+    There are basically two fashions of the development of linguistic 
+rules:
+    *	automatic inference of rules from corpus data;
+    *	manual development of rules.
+    In the sequel, I shall concentrate on what I call "manual develop-
+ment of rules", which has, however, nothing to do with manual dis-
+ambiguation.
+1.3.1. Rule-based reductive automatic disambiguation
+    I shall present a specifically linguistic method of disambiguation 
+which is currently being elaborated for Czech and whose motivation 
+was succintly described by K. Oliva and colleagues [Oliva K., 
+Hnatkova M., Petkevic V., Kveton P. The Linguistic Basis of a Rule-Based Tagger of 
+Czech // P. Sojka, I. Kopecek, K. Pala (eds.). Proceedings of the Conference "Text, 
+Speech and Dialogue 2000". Lecture Notes in Artificial Intelligence, № 1902. Springer, 
+2001. P. 3-8.]. This purely linguistic method whose main features are 
+described below has the following practical as well as theoretical 
+objectives.
+Practical objectives: 
+    *	to improve the morphosyntactic tagging of Czech corpora, espe-
+cially CNK;
+    *	to develop a grammar-checker for Czech;
+    *	to develop a preprocessing phase for automatic syntactic ana-
+lysis of Czech;
+    *	to prepare a solid point of departure for semantic analysis of 
+Czech, especially word sense disambiguation for Czech.
+Theoretical objective: 
+    *	to contribute to the knowledge of syntactic and semantic struc-
+ture of Czech which can then be reflected in a new grammar of Czech.
+	1.3.1.1. Properties of the reductive rule-based method
+    	The properties of our method can be specified as opposed to the 
+stochastic approach to disambiguation characterized above. Contrary to 
+the stochastic approach:
+    *	the rule-based system consists in the cooperation of disambi-
+guation rules [Oliva K., Hnatkova M., Petkevic V., Kveton P. Op. cit.] reflecting 
+the system of Czech (language) and a collocation component 
+responsible for exceptions and idiosyncrasies of Czech;
+    *	disambiguation is based exclusively on Czech-specific (mor-
+pho)syntactic rules developed on the basis of linguistic intuition and 
+corpus analysis (especially on K. Oliva's and P. Kveton's negative n-
+grams [Olivа K. The Possibilities of Automatic Detection/Correction of Errors in 
+Tagged Corpora: A Pilot Study on a German Corpus // V. Matousek, P. Mautner, 
+R. Moucek, K. Tauser (eds.). Proceedings of the Conference "Text, Speech and 
+Dialogue 2001". Lecture Notes in Artificial Intelligence, № 2166. Springer, 2001. 
+Р. 39-46; Oliva K., Kveton P. (Semi-)Automatic Detection of Errors in PoS-Tagged 
+Corpora // Shu Chuan Tseng (ed.): Proceedings of the 19th International Conference 
+on Computational Linguistics (COLING 2002, Taipei). Morgan Kaufmann Publishers, 
+San Francisco, 2002. Р. 509-515.] - no automatic inferring of rules from 
+the data is implied;
+    *	the rules are based on unlimited context;
+    *	the rules use both negative facts (negative n-gram conception 
+with n ? 2 is used, see below) and positive facts about the language 
+system of Czech;
+    *	reduction method is used: the input to the system is the output of 
+the morphological analysis where the input is formed by forms, tags and 
+lemmas provided by morphological analysis with:
+recall = 100% (the set of lemmas and tags assigned to a given word 
+form contains the correct one);
+precision = lowest possible (maximum number of incorrect lemmas 
+and tags is assigned).
+    Now, the method tries to retain the maximum recall (100%) 
+simultaneously maximizing precision by the following basic operations:
+    *	the removal of incorrect morphological interpretations down to 
+the only correct lemma(s) and tag(s) - negative approach (primarily used 
+by the rules);
+    *	direct identification of the correct tag(s) only - positive 
+approach (primarily used by the collocation component);
+    *	no training data is necessary but relatively well tagged corpora 
+are crucially needed for linguistic intuitions to be verified on data;
+    *	the performance of the system is not deteriorated in case the size 
+of the tagset increases;
+    *	the system does not try to "overdisambiguate", i.e. to disam-
+biguate morphologically inherently ambiguous sentences;
+    *	cyclic application of mutually independent and therefore un-
+ordered (groups of) rules is used - the rules are applied one after another 
+operating on constantly more and more disambiguated data;
+    *	during rule application no overt syntactic structures (such as 
+trees) are built;
+    the system does not guess, i.e. the "don't guess if you know" 
+approach is adopted [Tapanainen P., Voutilainen A. Tagging Accurately - Don't 
+Guess if You Know. Technical Report, Xerox Corp., 1994.];
+    *	the localization of errors is easy;
+    *	the rules' validity can be measured in terms of decades because 
+the syntax of languages of the world generally changes very slowly;
+    *	for rules' development all available sources of linguistic infor-
+mation are used (phraseological dictionaries, valency dictionaries, detail-
+ed classification of ambiguous forms, etc.);
+    *	rules are written in a special powerful rule language called LanGr 
+[Kveton P. Language for Grammatical Rules. Technical Report TR-2003-17. 
+Matematicko-fyzikalni fakulta UK. Prague, 2003; Kveton P. Rule-Based Morphological 
+Disambiguation (Towards a Combination of Linguistic and Stochastic Methods) [in 
+prep.].].
+    *	A disambiguation rule is composed of four types of compo-
+nents:
+    *	context;
+    *	disambiguation area;
+    *	report;
+    *	disambiguation action,
+    *	and has the following structure [Kveton P. [in prep.] Op. cit.; 
+Petkevic V., Hnatkova M. Automaticka morfologicka disambiguace predlozkovych 
+skupin v Ceskem narodnim korpusu // Z. Hladka, P. Karlik (eds.). CESTINA - 
+univerzalia a specifika 4. Nakladatelstvi Lidove noviny. Praha, 2002. P. 243-252.]:
+cont1 disamb1 cont2 disamb2 ... contn disambn contn+1report       action
+where:
+    conti	specifies a context;
+    disambi 	specifies a disambiguation area where the disambigua-
+tion actions (see below) are performed (i.e. data are modified);
+    action	specifies a disambiguation action resulting in removing 
+one or more incorrect tags;
+    report 	reports the disambiguation action performed.
+    1. The context is a unambiguous condition specified by means of 
+the IsSafe specification - a given word form or a given sequence of 
+word forms must have only the specified property, i.e. all of its mor-
+phological interpretations (tags) must comply with the condition spe-
+cified. The context is never changed by the rule application.
+    2. The disambiguation area is subject to data change and it is 
+specified by means of the Possible specification stating that at least one 
+of the morphological interpretations (tags) of the given word form must 
+comply with the condition specified. The disambiguation area is ty-
+pically ambiguous.
+    3. There are in principle two basic executive actions (opera-tions) 
+which modify the data:
+    DELETE some (not necessarily all) incorrect interpre-tation(s) 
+from one or more corpus positions (i.e. word tokens equipped with lem-
+mas and tags);
+    LEAVE ONLY correct interpretation(s) in one or more corpus posi-
+tions (i.e. word tokens equipped with lemmas and tags).
+    In addition to these basic functions there exist also other functions 
+which serve as macros for performing more DELETE (LEAVE ONLY) 
+operations at once. For instance, one such key functions is:
+    UNIFY [CONDITIONALLY] x y IN [gender,number,case]
+which has two operands, x y (the operands being two words, i.e. corpus 
+positions, each with its own repertory of tags), and deletes exactly those 
+respective values of the gender, number and case attribute in both x and 
+y which are not in the intersection of the values of each of the 
+respective attributes for x and y. The optional argument CONDI-
+TIONALLY makes unification condi-tional (i.e. the UNIFY operation is 
+performed only if for each res-pective attribute the intersection is 
+nonempty). This function is used mainly for the identification of 
+agreement or saturation of valency requirements (e.g. a particular 
+preposition requires a no-minal element in a certain case).
+    4. The report part contains a message describing the disam-
+biguation action performed.
+    1.3.1.2. Negative n-gram conception
+    The whole approach is primarily based on searching for and 
+subsequently exploiting inadmissible (morpho)syntactic con-figurations 
+(negative constraints) in the language system. These configurations are 
+called negative n-grams (bigrams, for n = 2; trigrams, for n = 3, etc.) 
+and they can form contiguous or non-contiguous sequences of tags 
+and/or forms and/or lemmas. The following contiguous bigram will 
+serve as a lucid example.
+    In the syntactic system of majority of languages, the ordered pair 
+(Preposition Verb) forms a negative bigram. Now we can ask how it 
+can be exploited. More formally:
+    Let X Y be a negative bigram in a given language. Two different dual 
+disambiguation rules can be formulated: in rule A below we fix the 
+preposition, in rule B we fix the verb. As the pair (Preposition Verb) is a 
+negative bigram, the other, i.e. non-fixed element of the pair, must be 
+removed by the appropriate rule.
+    Rule A
+    X = ITEM IsSafe Preposition;
+    /* X is an unambiguous preposition - it forms a context */
+    Y = ITEM Possible Verb;
+    /* Y can be a verb - it forms a disambiguation place */
+    REPORT Y "is not a verb because it follows a preposition" X
+    DELETE Verb FROM Y;
+    /* Y is not a verb in fact */
+    Example 1
+    Na(Prep) bal(Noun/Verb) se musis pekne obleci.
+    E. lit. For the ball you must be well clothed.
+    R. Я стою на(Prep) берегу(Noun/Verb) .
+    Here the verbal interpretation of the word bal (respectively 
+берегу) is discarded by rule A.
+    Rule B
+    X = ITEM Possible Preposition;
+    /* X can be a preposition - it forms a disambiguation place */
+    Y = ITEM IsSafe Verb;
+    /* Y is an unambiguous verb - it forms a context */
+    REPORT X "is not a preposition because it precedes a verb" Y
+    DELETE Preposition FROM X;
+    /* X is not a preposition in fact */
+    Example 2
+    Na to misto(Prep/Noun/Conj) ulozil(Verb) dokumenty.
+    E. lit. On the place he deposited the documents. 
+    Here the prepositional interpretation of the word misto is discarded 
+by rule A.
+    The type of disambiguation which our group proposes is based on 
+looking for as many negative constraints as possible and exploiting 
+them in the manner shown above. From this viewpoint this approach is 
+a general one because every language system is based on oppositions 
+and constraints. Several examples of negative constraints in Russian 
+and French are presented below.
+    Russian:
+*	(preposition, pronominal e-form): к ему vs. к нему;
+*	wrong case after a specific numeral: пять суда vs. пять 
+судoв;
+*	wrong case and number after a specific numeral: три судa vs. 
+три суднa;
+*	wrong prepositional case after a preposition: на ним vs. на 
+него or на нём;
+*	two finite verbs (except for auxiliaries) in the same clause:
+На берегу(Verb,Noun) сидела(Verb) женщина.
+Твою рожу(Verb,Noun) я ненавижу.
+*	gender non-agreement in analytical predicate: был сделана;
+*	wrong verbal valency: бояться отца(Gen, Acc).
+    French:
+*	non-agreement of the verbal predicate with its subject in 
+person:
+Je chante(1st_pers,3rd_pers).
+*	non-agreement of a direct object with a passive participle in 
+gender or number: *Il les a vu. vs. Il les a vu(e)s. 
+*	(negative_particle ne or n',Noun): Il n'est (Verb,Noun) ici.
+*	valency: succeder quelqu'un vs. succeder a quelqu'un.
+	1.3.1.3. Rules for Czech
+    	Generally, the rules for Czech for which the system is actually 
+developed remove:
+*	systemic ambiguity;
+*	casual ambiguity.
+    	Up to now, the following areas have been covered by the rules for 
+Czech:
+*	agreement in gender, number, person within analytical predi-
+cates, subject-predicate relations;
+*	agreement in gender, number, case within nominal groups;
+*	agreement in case within prepositional groups;
+*	agreement in gender, number of an antecedent in the main 
+clause and its coreferential consequent in the relative clause;
+*	object/subject case identification on the basis of subject-pre-
+dicate non-agreement in gender/number:
+Otec uvidel(Masc) okno(Neuter,(Nom,Acc)). 
+Отец увидел(Masc) окно(Neuter,(Nom,Acc)).
+*	prepositional (locative) case;
+*	verbs ambiguous with other parts of speech;
+*	reflexive pronouns/particles and their implications;
+*	identification of elements belonging to the same clause;
+*	some (not all) valency relations;
+*	key word-order relations (mainly clitics);
+*	vocalization of prepositions;
+*	verbal negation and negative concord:
+Nikdo(Negative_Pronoun) ten omyl(Positive_Verb,Noun) 
+neudela. 
+*Никто смог это сделать.
+*	nominative/accusative syncretism in active and passive sen-
+tences;
+*	various syntactically important ambiguous words such as:
+se (reflexive pronoun/preposition), je (verb form of the lemma 
+byt, E. be / pronominal form of the lemma on, E. they), etc.
+	1.3.1.4. Rules and syntactic analysis
+    The rule-based disambiguation system just presented can also pave 
+the way for chunking, i.e. for the identification of syntactically closely 
+related words in a sentence. From this point of view the system is at 
+present able to identify to a considerable extent:
+*	a majority of syntagms, i.e. the relation of the governor and its 
+dependent node;
+*	nominal groups (only left-dependent elements);
+*	prepositional groups;
+*	analytical verbo-nominal predicates;
+*	analytical verbal predicates;
+*	reflexive and other verbs/adjectives;
+*	agreement of various kinds;
+*	same clause appurtenance (i.e. the elements belonging to the 
+same clause);
+*	clause structure in compound sentences (only simpler cases);
+*	valency relations (only simpler cases);
+*	some word-order relations (especially within a clause);
+*	collocations (the classified list of collocations is gradually en-
+hanced).
+1.3.1.5. Experience with the rule-based system
+    In the course of our work, the rule-based system turned out to be 
+viable. The most important experience with the whole approach we 
+obtained can be summarized as follows:
+    1) the most important methodological asset of our system is a 
+consequent exploitation of the negative view of the language system 
+reflected in rules capturing negative n-grams; 
+    2) the availability of (stochastically) tagged corpora for the 
+verification of correctness of the rules is of crucial importance;
+    3) very sophisticated and exactly formally expressed linguistic 
+rules (especially syntactic ones) are necessary with a lot of linguistic 
+knowledge behind;
+    4) the system of language does exist and it is reflected in data 
+(otherwise our approach would not work!);
+    5) the results of the system are very promising (see the results of 
+the tests below).
+    We have also made experience with the major problems in the 
+disambiguation of Czech. The problems reflect a very intricate structure 
+of Czech syntax. Our experience shows the following problems:
+*	at least hundreds of rules are necessary (with various degrees 
+of generality);
+*	successful rules demand very deep linguistic knowledge of 
+sentence structure of Czech; the rules are difficult to write; 
+*	free word order in Czech makes the rules' formulation excep-
+tionally difficult;
+*	system and actual ellipses (i.e. missing elements) must be 
+accounted for; 
+*	erroneous input must also be processed where only partial 
+disambiguation is possible;
+*	there may be different varieties of language in the same text;
+*	system ambiguity, especially in the declension system of Czech 
+with its high case syncretism in declension paradigms, is very 
+difficult to account for; 
+*	nominative of nomination: type mesto Praha (город Прага);
+*	manifold types of casual ambiguity among different parts of 
+speech (exemplified by Russian: берегу, знать,сорок, виски 
+... etc.);
+*	one-sentence context seems not to be sufficient (textual core-
+ference relations);
+*	lot of exceptions from the system of Czech must be accounted 
+for - processing of collocations is necessary;
+1.3.1.6. Preliminary results
+    Our test corpus [Prague Dependency Treebank (2002) // URL: 
+http://ufal.ms.mff.cuni.cz/] comprised 1,5 mln word forms. The tagset size 
+was well over 2500 distinct tags. Our rule system comprised at the 
+time of testing 420 rules of different generality. The results seem to 
+be promising:
+    recall: 		cca 0,1% errors, i.e. 99,9% success rate;
+    precision: 		43% erroneous tags removed.
+2. Conclusions
+    On the basis of a lot of experience we have with our rule-based 
+system and given the disambiguation results achieved for Czech so far I 
+state that - in general - successful disambiguation is impossible
+    a)	without deep linguistic thinking and intuitions about the system 
+of language;
+    b)	without precise formulations of linguistic intuitions;
+    c)	with guess-like approach;
+    d)	without powerful programming tools;
+    e)	without underlying solid mathematical foundations.
+ 
+ 
+ 
+ 
+
+    
+284
+
+
